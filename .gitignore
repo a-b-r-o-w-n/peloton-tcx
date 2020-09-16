@@ -1,1 +1,3 @@
 node_modules
+peloton_data
+.env

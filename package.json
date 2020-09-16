@@ -1,0 +1,22 @@
+{
+  "name": "export_123030",
+  "version": "1.0.0",
+  "description": "",
+  "main": "convert-activities.js",
+  "dependencies": {
+    "fs-extra": "^9.0.1",
+    "lodash": "^4.17.20",
+    "node-fetch": "^2.6.0",
+    "prettier": "^2.0.5",
+    "rimraf": "^3.0.2",
+    "xmlbuilder": "^15.1.1",
+    "yargs": "^15.4.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
