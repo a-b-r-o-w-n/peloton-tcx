@@ -4,6 +4,7 @@
   "description": "",
   "main": "convert-activities.js",
   "dependencies": {
+    "dotenv": "^8.2.0",
     "fs-extra": "^9.0.1",
     "lodash": "^4.17.20",
     "node-fetch": "^2.6.0",

@@ -4,8 +4,11 @@ const { promisify } = require("util");
 
 const fetch = require("node-fetch");
 const { argv } = require("yargs");
+const dotenv = require("dotenv");
 
 const makeTcx = require("./makeTcx");
+
+dotenv.config();
 
 const writeFile = promisify(fs.writeFile);
 const readFile = promisify(fs.readFile);
