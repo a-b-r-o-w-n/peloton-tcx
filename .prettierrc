@@ -1,10 +1,4 @@
 {
   "printWidth": 120,
-
-  "overrides": [
-    {
-      "files": "*.tcx",
-      "options": { "parser": "xml" }
-    }
-  ]
+  "parser": "typescript"
 }

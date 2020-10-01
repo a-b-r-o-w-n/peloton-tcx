@@ -1,30 +1,35 @@
-const { find, max, mean, get } = require("lodash");
-const builder = require("xmlbuilder");
+import { find, max, mean, get } from "lodash";
+import builder from "xmlbuilder";
+
+import { Workout, WorkoutSample } from "./types";
 
 const milesToMeters = 1609.34;
-const convertToMeters = (d) => d * milesToMeters;
-const convertToKmHr = (d) => d * 1.609;
-const convertMps = (s) => s / 60 / 60;
+const convertToMeters = (d: number) => d * milesToMeters;
+const convertMps = (s: number) => s / 60 / 60;
 
-const shouldStartLap = (previous, next) => {
-  // return true if previous + next crosses a mile threshold
-  const miles = Math.floor(previous);
-  const currentLap = previous - miles;
+const findBySlug = <T extends { slug: string }>(data: T[], slug: string) => {
+  const result = find(data, { slug });
+
+  if (result) {
+    return result as T;
+  }
+
+  return undefined;
 };
 
-// convert mph to mps
-// multiply by interval
-// convert to meters
-
-const processSample = (activity, start, sample) => {
-  const distance = (find(sample.summaries, { slug: "distance" }) || {}).value || 0;
-  const calories = (find(sample.summaries, { slug: "calories" }) || {}).value || 0;
-  const pace = find(sample.metrics, { slug: "pace" });
-  const speed = pace && find(pace.alternatives, { slug: "speed" });
-  const heartRate = find(sample.metrics, { slug: "heart_rate" });
-  const incline = find(sample.metrics, { slug: "incline" }).values;
+const processSample = (activity: builder.XMLElement, start: number, sample: WorkoutSample) => {
+  const distance = findBySlug(sample.summaries, "distance")?.value || 0;
+  const calories = findBySlug(sample.summaries, "calories")?.value || 0;
+  const pace = findBySlug(sample.metrics, "pace");
+  const speed = findBySlug(pace?.alternatives ?? [], "speed");
+  const heartRate = findBySlug(sample.metrics, "heart_rate");
+  const incline = findBySlug(sample.metrics, "incline")?.values ?? [];
   const times = sample.seconds_since_pedaling_start;
   const calPerMile = Math.round(calories / distance);
+
+  if (!speed || !heartRate) {
+    return;
+  }
 
   let lap = activity.ele("Lap");
   lap.att("StartTime", new Date(start).toISOString());
@@ -54,7 +59,7 @@ const processSample = (activity, start, sample) => {
     const elevGain = distance * (incline[i] / 100);
     const timestamp = new Date(start + time * 1000).toISOString();
     lapDuration += interval;
-    totalElevation += elevGain;
+    totalElevation += convertToMeters(elevGain);
 
     // start new lap
     if (delta > 1) {
@@ -76,7 +81,7 @@ const processSample = (activity, start, sample) => {
 
       // end lap
       lap.ele("DistanceMeters", convertToMeters(parseFloat(delta.toFixed(3))));
-      lap.ele("MaximumSpeed", convertToMeters(convertMps(max(lapSpeeds))));
+      lap.ele("MaximumSpeed", convertToMeters(convertMps(max(lapSpeeds) ?? 0)));
       lap.ele("TotalTimeSeconds", lapDuration);
       lap.ele("Calories", calPerMile);
       lap.ele("AverageHeartRateBpm").ele({ Value: mean(lapHR) });
@@ -117,9 +122,10 @@ const processSample = (activity, start, sample) => {
       });
     }
 
+    // end of sampling data, so end the lap
     if (i === sample.seconds_since_pedaling_start.length - 1) {
       lap.ele("DistanceMeters", convertToMeters(parseFloat(delta.toFixed(3))));
-      lap.ele("MaximumSpeed", convertToMeters(convertMps(max(lapSpeeds))));
+      lap.ele("MaximumSpeed", convertToMeters(convertMps(max(lapSpeeds) ?? 0)));
       lap.ele("TotalTimeSeconds", lapDuration);
       lap.ele("Calories", Math.ceil(calPerMile * delta));
       lap.ele("AverageHeartRateBpm").ele({ Value: mean(lapHR) });
@@ -128,9 +134,8 @@ const processSample = (activity, start, sample) => {
   });
 };
 
-module.exports = async (workout, sample) => {
+export async function makeTcx(workout: Workout, sample: WorkoutSample): Promise<string> {
   const start = workout.start_time * 1000;
-  const pace = find(sample.metrics, { slug: "pace" });
 
   const root = builder.create("TrainingCenterDatabase", { encoding: "UTF-8" });
   root
@@ -150,4 +155,4 @@ module.exports = async (workout, sample) => {
   processSample(activity, start, sample);
 
   return root.end({ pretty: true });
-};
+}

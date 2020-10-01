@@ -1,23 +1,38 @@
 {
-  "name": "export_123030",
+  "name": "peloton-to-tcx",
   "version": "1.0.0",
-  "description": "",
-  "main": "convert-activities.js",
+  "description": "Converts Peloton tread workouts into Garmin compatible TCX files.",
+  "bin": "./lib/peloton-to-tcx.js",
   "dependencies": {
     "dotenv": "^8.2.0",
-    "fs-extra": "^9.0.1",
     "lodash": "^4.17.20",
-    "node-fetch": "^2.6.0",
-    "prettier": "^2.0.5",
+    "node-fetch": "^2.6.1",
     "rimraf": "^3.0.2",
     "xmlbuilder": "^15.1.1",
     "yargs": "^15.4.1"
   },
-  "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "devDependencies": {
+    "@types/lodash": "^4.14.161",
+    "@types/node": "^14.11.2",
+    "@types/node-fetch": "^2.5.7",
+    "@types/yargs": "^15.0.7",
+    "@typescript-eslint/eslint-plugin": "^4.3.0",
+    "@typescript-eslint/parser": "^4.3.0",
+    "eslint": "^7.10.0",
+    "eslint-config-prettier": "^6.12.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-prettier": "^3.1.4",
+    "prettier": "^2.1.2",
+    "typescript": "^4.0.3"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "scripts": {
+    "build": "tsc"
+  },
+  "keywords": [
+    "garmin",
+    "peloton",
+    "tcx"
+  ],
+  "author": "Andy Brown <asbrown002@gmail.com>",
+  "license": "MIT"
 }
