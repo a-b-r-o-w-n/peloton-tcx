@@ -4,6 +4,8 @@
   "version": "0.0.1",
   "license": "MIT",
   "description": "Converts Peloton tread workouts into Garmin compatible TCX files.",
+  "homepage": "https://github.com/a-b-r-o-w-n/peloton-tcx",
+  "bugs": "https://github.com/a-b-r-o-w-n/peloton-tcx/issues",
   "bin": "./lib/peloton-tcx.js",
   "files": [
     "lib",
