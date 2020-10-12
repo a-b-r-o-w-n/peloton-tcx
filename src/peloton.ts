@@ -13,6 +13,8 @@ export class Peloton {
   private samples = new Map<string, WorkoutSample>();
 
   public async login(username: string, password: string): Promise<void> {
+    log.info("Logging in to Peloton.");
+    log.debug("fetch: %s", `${baseUrl}/auth/login`);
     const res = await fetch(`${baseUrl}/auth/login`, {
       method: "post",
       body: JSON.stringify({
@@ -26,15 +28,20 @@ export class Peloton {
     const user = await res.json();
 
     this.user = user;
+    log.info("Login success!");
+    log.debug("User id: %s", this.userId);
+    log.debug("Session id: %s", this.sessionId);
   }
 
   public async getWorkoutHistory(limit: number): Promise<Workout[]> {
+    log.info("Getting last %d workouts.", limit);
     let hasNextPage = true;
     let page = 0;
     const perPage = Math.min(limit, maxPerPage);
 
     while (hasNextPage) {
       const url = `${baseUrl}/api/user/${this.userId}/workouts?limit=${perPage}&page=${page}`;
+      log.debug("fetch: %s", url);
       const res = await fetch(url, {
         headers: this.defaultHeaders,
       });
@@ -52,6 +59,7 @@ export class Peloton {
       page++;
     }
 
+    log.info("Done getting workouts.");
     return this.workouts;
   }
 
@@ -62,7 +70,9 @@ export class Peloton {
 
   public async getWorkoutSample(workoutId: string): Promise<WorkoutSample | undefined> {
     log.debug(`Fetching performance data for workout ${workoutId}`);
-    const res = await fetch(`${baseUrl}/api/workout/${workoutId}/performance_graph?every_n=1&limit=14400`);
+    const sampleUrl = `${baseUrl}/api/workout/${workoutId}/performance_graph?every_n=1&limit=14400`;
+    log.debug("fetch: %s", sampleUrl);
+    const res = await fetch(sampleUrl);
     const data = (await res.json()) as WorkoutSample;
 
     if (data) {
@@ -80,6 +90,7 @@ export class Peloton {
       const sample = this.samples.get(workout.id);
 
       if (workout.fitness_discipline === "running" && sample) {
+        log.debug("Processing workout: %s", workout.id);
         const xml = await makeTcx(workout, sample);
         results[`${d.toISOString().replace(/T.*/, "")}_${workout.id}.tcx`] = xml;
       }

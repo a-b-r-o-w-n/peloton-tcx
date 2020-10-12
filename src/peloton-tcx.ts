@@ -11,7 +11,7 @@ import log from "loglevel";
 import { Peloton } from "./peloton";
 
 dotenv.config();
-log.setDefaultLevel(log.levels.INFO);
+log.setDefaultLevel(log.levels.ERROR);
 
 const mkdir = promisify(fs.mkdir);
 const writeFile = promisify(fs.writeFile);
@@ -41,6 +41,7 @@ const argv = yargs
     alias: "v",
     boolean: true,
     default: false,
+    describe: "Prints more information to the console.",
   })
   .help("h")
   .alias("h", "help").argv;
@@ -50,7 +51,7 @@ const LIMIT = argv.limit ?? Infinity;
 const USERNAME = (argv.username ?? process.env.PELOTON_USERNAME) as string;
 const PASSWORD = (argv.password ?? process.env.PELOTON_PASSWORD) as string;
 
-log.setLevel(argv.verbose ? log.levels.TRACE : log.levels.INFO);
+log.setLevel(argv.verbose ? log.levels.TRACE : log.levels.ERROR);
 
 if (!USERNAME || !PASSWORD) {
   log.error(
@@ -76,9 +77,11 @@ async function main() {
   await api.getSamples();
   const results = await api.processWorkouts();
 
+  log.info("Done processing workouts.");
   await Promise.all(
     Object.entries(results).map(([name, xml]) => {
       if (OUT_DIR) {
+        log.debug("Writing tcx to %s", name);
         return writeFile(path.resolve(OUT_DIR, name), xml);
       }
 
