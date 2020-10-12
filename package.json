@@ -1,7 +1,7 @@
 {
   "name": "peloton-tcx",
   "author": "Andy Brown <asbrown002@gmail.com>",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "license": "MIT",
   "description": "Converts Peloton tread workouts into Garmin compatible TCX files.",
   "homepage": "https://github.com/a-b-r-o-w-n/peloton-tcx",
