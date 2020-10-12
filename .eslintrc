@@ -13,6 +13,8 @@
   },
   "rules": {
     "import/first": "error",
-    "import/order": ["error", { "newlines-between": "always" }]
+    "import/order": ["error", { "newlines-between": "always" }],
+
+    "no-console": "error"
   }
 }
