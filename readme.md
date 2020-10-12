@@ -1,9 +1,9 @@
-# peloton-to-ctx
+# peloton-ctx
 
 Converts Peloton workout data to Garmin compatible TCX files that can be uploaded to Garmin Connect.
 
 ```
-Usage: peloton-to-tcx [options]
+Usage: peloton-tcx [options]
 
 Options:
   --version    Show version number                                     [boolean]
