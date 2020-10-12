@@ -15,6 +15,6 @@ Options:
   --out, -o    Specifies output directory to write tcx files. If omitted, output
                will be printed to stdout.                               [string]
   -h, --help   Show help                                               [boolean]
-```;
+```
 
 > NOTE: Currently only supports treadmill workouts. Bike workouts coming soon.
