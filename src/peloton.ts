@@ -1,4 +1,5 @@
 import fetch from "node-fetch";
+import log from "loglevel";
 
 import { User, Workout, WorkoutResults, WorkoutSample } from "./types";
 import { makeTcx } from "./makeTcx";
@@ -60,7 +61,7 @@ export class Peloton {
   }
 
   public async getWorkoutSample(workoutId: string): Promise<WorkoutSample | undefined> {
-    console.log(`Fetching performance data for workout ${workoutId}`);
+    log.debug(`Fetching performance data for workout ${workoutId}`);
     const res = await fetch(`${baseUrl}/api/workout/${workoutId}/performance_graph?every_n=1&limit=14400`);
     const data = (await res.json()) as WorkoutSample;
 

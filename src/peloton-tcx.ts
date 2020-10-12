@@ -6,10 +6,12 @@ import { promisify } from "util";
 
 import yargs from "yargs";
 import dotenv from "dotenv";
+import log from "loglevel";
 
 import { Peloton } from "./peloton";
 
 dotenv.config();
+log.setDefaultLevel(log.levels.INFO);
 
 const mkdir = promisify(fs.mkdir);
 const writeFile = promisify(fs.writeFile);
@@ -35,6 +37,11 @@ const argv = yargs
     type: "string",
     describe: "Specifies output directory to write tcx files. If omitted, output will be printed to stdout.",
   })
+  .option("verbose", {
+    alias: "v",
+    boolean: true,
+    default: false,
+  })
   .help("h")
   .alias("h", "help").argv;
 
@@ -43,8 +50,10 @@ const LIMIT = argv.limit ?? Infinity;
 const USERNAME = (argv.username ?? process.env.PELOTON_USERNAME) as string;
 const PASSWORD = (argv.password ?? process.env.PELOTON_PASSWORD) as string;
 
+log.setLevel(argv.verbose ? log.levels.TRACE : log.levels.INFO);
+
 if (!USERNAME || !PASSWORD) {
-  console.error(
+  log.error(
     "Username or password missing. Set PELOTON_USERNAME or PELOTON_PASSWORD environment variables or pass --username and --password arguments."
   );
   process.exit(1);
@@ -73,6 +82,7 @@ async function main() {
         return writeFile(path.resolve(OUT_DIR, name), xml);
       }
 
+      // eslint-disable-next-line no-console
       console.log(xml);
     })
   );
@@ -81,6 +91,6 @@ async function main() {
 main()
   .then(() => process.exit(0))
   .catch((err) => {
-    console.error(err);
+    log.error(err);
     process.exit(1);
   });
